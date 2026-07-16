@@ -1,3 +1,18 @@
 spring:
   application:
     name: Java_BookCatalogOrderService
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hypercell_internship2026_db?currentSchema=bookstore
+    username: postgres
+    password: 8821
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  liquibase:
+    change-log: classpath:db/master.xml
+
+server:
+  port: 8000
