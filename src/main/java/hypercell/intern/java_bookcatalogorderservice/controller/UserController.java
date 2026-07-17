@@ -25,10 +25,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserDTO.Response>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
+//    @GetMapping
+//    public ResponseEntity<List<UserDTO.Response>> getAllUsers() {
+//        return ResponseEntity.ok(userService.getAllUsers());
+//    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -35,4 +35,20 @@
 
     </changeSet>
 
+    <changeSet id="01_book_2" author="Mo'men Mohamed">
+
+        <addColumn tableName="books">
+            <column name="created_by" type="BIGINT"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+                baseTableName="books"
+                baseColumnNames="created_by"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_books_users"/>
+
+    </changeSet>
+
+
 </databaseChangeLog>

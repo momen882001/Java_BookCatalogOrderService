@@ -27,4 +27,8 @@ public class Book {
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
 }

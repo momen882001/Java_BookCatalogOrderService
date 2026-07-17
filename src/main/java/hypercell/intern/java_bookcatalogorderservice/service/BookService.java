@@ -1,9 +1,12 @@
 package hypercell.intern.java_bookcatalogorderservice.service;
 
 import hypercell.intern.java_bookcatalogorderservice.dto.BookDto;
+import hypercell.intern.java_bookcatalogorderservice.dto.UserDTO;
 import hypercell.intern.java_bookcatalogorderservice.exception.NotFoundException;
 import hypercell.intern.java_bookcatalogorderservice.model.Book;
+import hypercell.intern.java_bookcatalogorderservice.model.User;
 import hypercell.intern.java_bookcatalogorderservice.repository.BookRepository;
+import hypercell.intern.java_bookcatalogorderservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -16,8 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookService {
     private final BookRepository bookRepository;
+    private final UserRepository userRepository;
 
     public BookDto.Response createBook(BookDto.Request bookRequest) {
+        User user = userRepository.findById(bookRequest.createdByID())
+                .orElseThrow(() -> new NotFoundException("User with id " + bookRequest.createdByID() + " not found"));
+
         Book book = Book.builder().title(bookRequest.title())
                 .isbn(bookRequest.isbn())
                 .author(bookRequest.author())
@@ -25,44 +32,51 @@ public class BookService {
                 .availableQuantity(bookRequest.availableQuantity())
                 .createdAt(ZonedDateTime.now(ZoneId.of("Z")))
                 .updatedAt(ZonedDateTime.now(ZoneId.of("Z")))
+                .createdBy(user)
                 .build();
 
+        UserDTO.Response userResponse = new UserDTO.Response(user.getId(), user.getFirstname(), user.getLastname(), user.getCreatedAt(), null);
+
         bookRepository.save(book);
         return new BookDto.Response(book.getId(),
                 book.getTitle(), book.getIsbn(), book.getAuthor(),
-                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt());
-    }
+                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(),
+                book.getUpdatedAt(),
+                userResponse
 
-    public BookDto.Response updateBook(Long id, BookDto.updateRequest bookRequest) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
-        book.setPrice(bookRequest.price());
-        book.setAvailableQuantity(bookRequest.availableQuantity());
-        book.setUpdatedAt(ZonedDateTime.now(ZoneId.of("Z")));
-        bookRepository.save(book);
-        return new BookDto.Response(book.getId(),
-                book.getTitle(), book.getIsbn(), book.getAuthor(),
-                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt());
-    }
-
-    public BookDto.Response getBookById(Long id) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
-        return new BookDto.Response(
-                book.getId(),
-                book.getTitle(), book.getIsbn(), book.getAuthor(),
-                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt()
         );
     }
 
-    public List<BookDto.Response> getAllBooks() {
-        return bookRepository.findAll()
-                .stream().map(book -> new BookDto.Response(
-                        book.getId(),
-                        book.getTitle(), book.getIsbn(), book.getAuthor(),
-                        book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt()
-                )).toList();
-    }
+//    public BookDto.Response updateBook(Long id, BookDto.updateRequest bookRequest) {
+//        Book book = bookRepository.findById(id)
+//                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
+//        book.setPrice(bookRequest.price());
+//        book.setAvailableQuantity(bookRequest.availableQuantity());
+//        book.setUpdatedAt(ZonedDateTime.now(ZoneId.of("Z")));
+//        bookRepository.save(book);
+//        return new BookDto.Response(book.getId(),
+//                book.getTitle(), book.getIsbn(), book.getAuthor(),
+//                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt(), );
+//    }
+
+//    public BookDto.Response getBookById(Long id) {
+//        Book book = bookRepository.findById(id)
+//                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
+//        return new BookDto.Response(
+//                book.getId(),
+//                book.getTitle(), book.getIsbn(), book.getAuthor(),
+//                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt()
+//        );
+//    }
+//
+//    public List<BookDto.Response> getAllBooks() {
+//        return bookRepository.findAll()
+//                .stream().map(book -> new BookDto.Response(
+//                        book.getId(),
+//                        book.getTitle(), book.getIsbn(), book.getAuthor(),
+//                        book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt()
+//                )).toList();
+//    }
 
     public void deleteBookById(Long id) {
         try {
