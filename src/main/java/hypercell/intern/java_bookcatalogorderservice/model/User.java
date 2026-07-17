@@ -30,5 +30,7 @@ public class User {
     @OneToMany(mappedBy = "createdBy")
     private List<Book> books;
 
+    @OneToMany(mappedBy = "createdBy")
+    private List<Order> orders;
 
 }

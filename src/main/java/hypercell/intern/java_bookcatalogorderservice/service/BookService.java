@@ -3,6 +3,7 @@ package hypercell.intern.java_bookcatalogorderservice.service;
 import hypercell.intern.java_bookcatalogorderservice.dto.BookDto;
 import hypercell.intern.java_bookcatalogorderservice.dto.UserDTO;
 import hypercell.intern.java_bookcatalogorderservice.exception.NotFoundException;
+import hypercell.intern.java_bookcatalogorderservice.mapper.BookMapper;
 import hypercell.intern.java_bookcatalogorderservice.model.Book;
 import hypercell.intern.java_bookcatalogorderservice.model.User;
 import hypercell.intern.java_bookcatalogorderservice.repository.BookRepository;
@@ -25,26 +26,11 @@ public class BookService {
         User user = userRepository.findById(bookRequest.createdByID())
                 .orElseThrow(() -> new NotFoundException("User with id " + bookRequest.createdByID() + " not found"));
 
-        Book book = Book.builder().title(bookRequest.title())
-                .isbn(bookRequest.isbn())
-                .author(bookRequest.author())
-                .price(bookRequest.price())
-                .availableQuantity(bookRequest.availableQuantity())
-                .createdAt(ZonedDateTime.now(ZoneId.of("Z")))
-                .updatedAt(ZonedDateTime.now(ZoneId.of("Z")))
-                .createdBy(user)
-                .build();
-
-        UserDTO.Response userResponse = new UserDTO.Response(user.getId(), user.getFirstname(), user.getLastname(), user.getCreatedAt(), null);
+        Book book = BookMapper.toEntity(bookRequest, user);
 
         bookRepository.save(book);
-        return new BookDto.Response(book.getId(),
-                book.getTitle(), book.getIsbn(), book.getAuthor(),
-                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(),
-                book.getUpdatedAt(),
-                userResponse
+        return BookMapper.toResponse(book);
 
-        );
     }
 
 //    public BookDto.Response updateBook(Long id, BookDto.updateRequest bookRequest) {
@@ -56,7 +42,7 @@ public class BookService {
 //        bookRepository.save(book);
 //        return new BookDto.Response(book.getId(),
 //                book.getTitle(), book.getIsbn(), book.getAuthor(),
-//                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt(), );
+//                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt());
 //    }
 
 //    public BookDto.Response getBookById(Long id) {
@@ -68,7 +54,7 @@ public class BookService {
 //                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt()
 //        );
 //    }
-//
+
 //    public List<BookDto.Response> getAllBooks() {
 //        return bookRepository.findAll()
 //                .stream().map(book -> new BookDto.Response(

@@ -1,10 +1,9 @@
 package hypercell.intern.java_bookcatalogorderservice.dto;
 
-import hypercell.intern.java_bookcatalogorderservice.model.User;
-
 import java.time.ZonedDateTime;
 
 public abstract class BookDto {
+
     public record Request(String title, String isbn, String author, Double price, Integer availableQuantity,
                           Long createdByID) {
     }
@@ -16,9 +15,10 @@ public abstract class BookDto {
                            Double price,
                            Integer availableQuantity,
                            ZonedDateTime createdAt, ZonedDateTime updatedAt,
-                           UserDTO.Response user
+                           UserDTO.Response createdBy
     ) {
     }
+
 
     public record updateRequest(Double price, Integer availableQuantity) {
     }

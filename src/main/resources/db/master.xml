@@ -7,5 +7,7 @@
 
     <include file="db/changelog/01_book.xml" relativeToChangelogFile="false"/>
     <include file="db/changelog/02_user.xml" relativeToChangelogFile="false"/>
+    <include file="db/changelog/03_order.xml" relativeToChangelogFile="false"/>
+    <include file="db/changelog/04_order_item.xml" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>
