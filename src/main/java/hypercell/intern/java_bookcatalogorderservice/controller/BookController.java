@@ -20,10 +20,10 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(bookRequest));
     }
 
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<BookDto.Response> updateBook(@PathVariable Long id, @RequestBody BookDto.updateRequest bookRequest) {
-//        return ResponseEntity.ok(bookService.updateBook(id, bookRequest));
-//    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<BookDto.Response> updateBook(@PathVariable Long id, @RequestBody BookDto.updateRequest bookRequest) {
+        return ResponseEntity.ok(bookService.updateBook(id, bookRequest));
+    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -31,13 +31,13 @@ public class BookController {
         bookService.deleteBookById(id);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<BookDto.Response> getBookById(@PathVariable Long id) {
-//        return ResponseEntity.ok(bookService.getBookById(id));
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<BookDto.Response> getBookById(@PathVariable Long id) {
+        return ResponseEntity.ok(bookService.getBookById(id));
+    }
 
-//    @GetMapping
-//    public ResponseEntity<List<BookDto.Response>> getAllBooks() {
-//        return ResponseEntity.ok(bookService.getAllBooks());
-//    }
+    @GetMapping
+    public ResponseEntity<List<BookDto.Response>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
 }

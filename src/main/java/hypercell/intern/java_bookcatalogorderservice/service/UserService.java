@@ -68,11 +68,22 @@ public class UserService {
         }
     }
 
-//    public List<UserDTO.Response> getAllUsers() {
-//        return userRepository.findAll().stream()
-//                .map(e -> new UserDTO.Response(e.getId(), e.getFirstname(), e.getLastname(), e.getCreatedAt()))
-//                .toList();
-//    }
+    public List<UserDTO.Response> getAllUsers() {
+        return userRepository.findAllWithBooks().stream()
+                .map(e -> new UserDTO.Response(e.getId(), e.getFirstname(), e.getLastname(), e.getCreatedAt(), e.getBooks().stream()
+                        .map(b -> new BookDto.Response(
+                                b.getId(),
+                                b.getTitle(),
+                                b.getIsbn(),
+                                b.getAuthor(),
+                                b.getPrice(),
+                                b.getAvailableQuantity(),
+                                b.getCreatedAt(),
+                                b.getUpdatedAt(),
+                                null
+                        )).toList()))
+                .toList();
+    }
 
 
 }

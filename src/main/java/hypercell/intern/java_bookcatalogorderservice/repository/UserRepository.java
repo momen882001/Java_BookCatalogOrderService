@@ -9,11 +9,18 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("""
-                SELECT u
+                SELECT DISTINCT u
                 FROM User u
                 LEFT JOIN FETCH u.books
                 WHERE u.id = :id
             """)
     Optional<User> findUserWithBooks(Long id);
-    
+
+    @Query("""
+                SELECT DISTINCT u
+                FROM User u
+                LEFT JOIN FETCH u.books
+            """)
+    List<User> findAllWithBooks();
+
 }

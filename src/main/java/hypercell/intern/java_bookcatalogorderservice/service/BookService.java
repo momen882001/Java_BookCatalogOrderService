@@ -33,36 +33,26 @@ public class BookService {
 
     }
 
-//    public BookDto.Response updateBook(Long id, BookDto.updateRequest bookRequest) {
-//        Book book = bookRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
-//        book.setPrice(bookRequest.price());
-//        book.setAvailableQuantity(bookRequest.availableQuantity());
-//        book.setUpdatedAt(ZonedDateTime.now(ZoneId.of("Z")));
-//        bookRepository.save(book);
-//        return new BookDto.Response(book.getId(),
-//                book.getTitle(), book.getIsbn(), book.getAuthor(),
-//                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt());
-//    }
+    public BookDto.Response updateBook(Long id, BookDto.updateRequest bookRequest) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
+        book.setPrice(bookRequest.price());
+        book.setAvailableQuantity(bookRequest.availableQuantity());
+        book.setUpdatedAt(ZonedDateTime.now(ZoneId.of("Z")));
+        bookRepository.save(book);
+        return BookMapper.toResponse(book);
+    }
 
-//    public BookDto.Response getBookById(Long id) {
-//        Book book = bookRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
-//        return new BookDto.Response(
-//                book.getId(),
-//                book.getTitle(), book.getIsbn(), book.getAuthor(),
-//                book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt()
-//        );
-//    }
+    public BookDto.Response getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with id " + id + " not found"));
+        return BookMapper.toResponse(book);
+    }
 
-//    public List<BookDto.Response> getAllBooks() {
-//        return bookRepository.findAll()
-//                .stream().map(book -> new BookDto.Response(
-//                        book.getId(),
-//                        book.getTitle(), book.getIsbn(), book.getAuthor(),
-//                        book.getPrice(), book.getAvailableQuantity(), book.getCreatedAt(), book.getUpdatedAt()
-//                )).toList();
-//    }
+    public List<BookDto.Response> getAllBooks() {
+        return bookRepository.findAll()
+                .stream().map(BookMapper::toResponse).toList();
+    }
 
     public void deleteBookById(Long id) {
         try {
