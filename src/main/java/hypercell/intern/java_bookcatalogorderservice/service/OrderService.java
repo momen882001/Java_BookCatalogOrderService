@@ -5,6 +5,7 @@ import hypercell.intern.java_bookcatalogorderservice.dto.OrderItemDTO;
 import hypercell.intern.java_bookcatalogorderservice.enums.OrderStatusEnum;
 import hypercell.intern.java_bookcatalogorderservice.exception.NotFoundException;
 import hypercell.intern.java_bookcatalogorderservice.exception.ValidationException;
+import hypercell.intern.java_bookcatalogorderservice.mapper.OrderMapper;
 import hypercell.intern.java_bookcatalogorderservice.model.Book;
 import hypercell.intern.java_bookcatalogorderservice.model.Order;
 import hypercell.intern.java_bookcatalogorderservice.model.User;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -88,5 +86,52 @@ public class OrderService {
                 savedOrder.getCreatedAt(),
                 savedOrder.getStatus()
         );
+    }
+
+    public OrderDTO.Response getByIdWithOrderItems(Long id) {
+        Order order = orderRepository.findByIdWithOrderItems(id).orElseThrow(
+                () -> new NotFoundException("Order not found with id: " + id));
+        return OrderMapper.toResponse(order);
+    }
+
+    public List<OrderDTO.Response> getAllWithOrderItems() {
+        List<Order> orders = orderRepository.findAllWithOrderItems();
+        return orders.stream()
+                .map(OrderMapper::toResponse)
+                .toList();
+    }
+
+
+    public OrderDTO.Response cancelOrder(Long id) {
+        Order order = orderRepository.findByIdWithOrderItems(id).orElseThrow(
+                () -> new NotFoundException("Order not found with id: " + id));
+
+
+        validateOrderCanBeCancelled(order);
+
+        // update order status from pending to canceled
+        order.setStatus(OrderStatusEnum.CANCELLED);
+        order.getOrderItems().forEach(
+                orderItem -> orderItem.getBook()
+                        .setAvailableQuantity(orderItem.getQuantity() + orderItem.getBook().getAvailableQuantity())
+        );
+
+        orderRepository.save(order);
+
+        return OrderMapper.toResponse(order);
+
+    }
+
+//  ------------------------------- Private Methods ---------------------------------------------------
+
+    // validate order which not in pending status
+    private void validateOrderCanBeCancelled(Order order) {
+        if (order.getStatus() == OrderStatusEnum.CANCELLED) {
+            throw new ValidationException("Order already cancelled");
+        }
+
+        if (order.getStatus() == OrderStatusEnum.COMPLETED) {
+            throw new ValidationException("Order already completed");
+        }
     }
 }

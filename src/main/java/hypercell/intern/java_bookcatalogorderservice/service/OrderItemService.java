@@ -3,6 +3,7 @@ package hypercell.intern.java_bookcatalogorderservice.service;
 import hypercell.intern.java_bookcatalogorderservice.dto.OrderItemDTO;
 import hypercell.intern.java_bookcatalogorderservice.exception.NotFoundException;
 import hypercell.intern.java_bookcatalogorderservice.exception.ValidationException;
+import hypercell.intern.java_bookcatalogorderservice.mapper.OrderItemMapper;
 import hypercell.intern.java_bookcatalogorderservice.model.Book;
 import hypercell.intern.java_bookcatalogorderservice.model.Order;
 import hypercell.intern.java_bookcatalogorderservice.model.OrderItem;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderItemService {
     private final OrderItemRepository orderItemRepository;
-    private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
 
     public OrderItemDTO.Response createOrderItem(OrderItemDTO.Request orderItemRequest, Order order) {
@@ -34,13 +34,6 @@ public class OrderItemService {
         book.setAvailableQuantity(book.getAvailableQuantity() - orderItemRequest.quantity());
         bookRepository.save(book);
         orderItemRepository.save(orderItem);
-        return new OrderItemDTO.Response(
-                orderItem.getId(),
-                orderItem.getOrder().getId(),
-                orderItem.getBook().getId(),
-                orderItem.getQuantity(),
-                orderItem.getUnitPrice(),
-                orderItem.getSubTotal()
-        );
+        return OrderItemMapper.toResponse(orderItem);
     }
 }
