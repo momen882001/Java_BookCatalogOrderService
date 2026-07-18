@@ -1,5 +1,6 @@
 package hypercell.intern.java_bookcatalogorderservice.model;
 
+import hypercell.intern.java_bookcatalogorderservice.enums.OrderStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +27,7 @@ public class Order {
     private ZonedDateTime createdAt;
 
     @Column(nullable = false)
-    private String status;
+    private OrderStatusEnum status;
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
