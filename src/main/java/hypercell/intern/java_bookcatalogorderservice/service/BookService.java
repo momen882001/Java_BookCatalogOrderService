@@ -3,6 +3,7 @@ package hypercell.intern.java_bookcatalogorderservice.service;
 import hypercell.intern.java_bookcatalogorderservice.dto.BookDto;
 import hypercell.intern.java_bookcatalogorderservice.dto.UserDTO;
 import hypercell.intern.java_bookcatalogorderservice.exception.NotFoundException;
+import hypercell.intern.java_bookcatalogorderservice.exception.ValidationException;
 import hypercell.intern.java_bookcatalogorderservice.mapper.BookMapper;
 import hypercell.intern.java_bookcatalogorderservice.model.Book;
 import hypercell.intern.java_bookcatalogorderservice.model.User;
@@ -23,6 +24,10 @@ public class BookService {
     private final UserRepository userRepository;
 
     public BookDto.Response createBook(BookDto.Request bookRequest) {
+        if (bookRepository.existsByIsbn(bookRequest.isbn())) {
+            throw new ValidationException("ISBN already exists");
+        }
+
         User user = userRepository.findById(bookRequest.createdByID())
                 .orElseThrow(() -> new NotFoundException("User with id " + bookRequest.createdByID() + " not found"));
 

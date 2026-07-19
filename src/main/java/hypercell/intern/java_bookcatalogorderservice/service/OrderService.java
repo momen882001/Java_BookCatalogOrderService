@@ -30,59 +30,21 @@ public class OrderService {
 
     @Transactional
     public OrderDTO.Response createOrder(OrderDTO.Request orderRequest) {
-        if (orderRequest.orderItems().isEmpty()) {
-            throw new ValidationException("Order items cannot be empty");
-        }
 
-        User user = userRepository.findById(orderRequest.userId())
-                .orElseThrow(() -> new NotFoundException("User with id " + orderRequest.userId() + " not found"));
+        User user = getUser(orderRequest.userId());
 
-        Set<Long> bookIds = new HashSet<>();
-        Double totalAmount = 0.0;
+        double totalAmount = validateOrderAndCalculateTotal(orderRequest);
 
-        for (OrderItemDTO.Request itemRequest : orderRequest.orderItems()) {
+        Order savedOrder = saveOrder(user, totalAmount);
 
-            if (!bookIds.add(itemRequest.bookId())) {
-                throw new ValidationException(
-                        "Duplicate book with id " + itemRequest.bookId() + " in the order");
-            }
-
-            Book book = bookRepository.findById(itemRequest.bookId())
-                    .orElseThrow(() -> new NotFoundException(
-                            "Book not found with id: " + itemRequest.bookId()));
-
-            if (book.getAvailableQuantity() <= 0) {
-                throw new ValidationException(
-                        "Book '" + book.getTitle() + "' is out of stock");
-            }
-
-            if (itemRequest.quantity() > book.getAvailableQuantity()) {
-                throw new ValidationException(
-                        "Requested quantity exceeds available stock for book: "
-                                + book.getTitle());
-            }
-
-            totalAmount += book.getPrice() * itemRequest.quantity();
-        }
-
-        Order order = Order.builder()
-                .createdBy(user)
-                .createdAt(ZonedDateTime.now(ZoneId.of("Z")))
-                .status(OrderStatusEnum.PENDING)
-                .totalAmount(totalAmount)
-                .build();
-
-        Order savedOrder = orderRepository.save(order);
-        List<OrderItemDTO.Response> orderItemsList = new ArrayList<>();
-        for (OrderItemDTO.Request itemRequest : orderRequest.orderItems()) {
-            orderItemsList.add(orderItemService.createOrderItem(itemRequest, savedOrder));
-        }
+        List<OrderItemDTO.Response> orderItems =
+                createOrderItem(savedOrder, orderRequest.orderItems());
 
         return new OrderDTO.Response(
                 savedOrder.getId(),
-                savedOrder.getCreatedBy().getId(),
+                user.getId(),
                 savedOrder.getTotalAmount(),
-                orderItemsList,
+                orderItems,
                 savedOrder.getCreatedAt(),
                 savedOrder.getStatus()
         );
@@ -124,6 +86,82 @@ public class OrderService {
 
 //  ------------------------------- Private Methods ---------------------------------------------------
 
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new NotFoundException("User with id " + userId + " not found"));
+    }
+
+    private double validateOrderAndCalculateTotal(OrderDTO.Request orderRequest) {
+
+        Set<Long> bookIds = new HashSet<>();
+        double total = 0;
+
+        for (OrderItemDTO.Request item : orderRequest.orderItems()) {
+
+            validateDuplicateBook(bookIds, item.bookId());
+
+            Book book = getBook(item.bookId());
+
+            validateBookAvailability(book, item.quantity());
+
+            total += book.getPrice() * item.quantity();
+        }
+
+        return total;
+    }
+
+    private void validateDuplicateBook(Set<Long> bookIds, Long bookId) {
+
+        if (!bookIds.add(bookId)) {
+            throw new ValidationException(
+                    "Duplicate book with id " + bookId + " in the order");
+        }
+    }
+
+    private Book getBook(Long bookId) {
+
+        return bookRepository.findById(bookId)
+                .orElseThrow(() ->
+                        new NotFoundException("Book not found with id: " + bookId));
+    }
+
+    private void validateBookAvailability(Book book, Integer requestedQuantity) {
+
+        if (book.getAvailableQuantity() <= 0) {
+            throw new ValidationException(
+                    "Book '" + book.getTitle() + "' is out of stock");
+        }
+
+        if (requestedQuantity > book.getAvailableQuantity()) {
+            throw new ValidationException(
+                    "Requested quantity exceeds available stock for book: "
+                            + book.getTitle());
+        }
+    }
+
+    private Order saveOrder(User user, double totalAmount) {
+
+        Order order = Order.builder()
+                .createdBy(user)
+                .createdAt(ZonedDateTime.now(ZoneId.of("Z")))
+                .status(OrderStatusEnum.PENDING)
+                .totalAmount(totalAmount)
+                .build();
+
+        return orderRepository.save(order);
+    }
+
+    private List<OrderItemDTO.Response> createOrderItem(
+            Order order,
+            List<OrderItemDTO.Request> requests) {
+
+        return requests.stream()
+                .map(request -> orderItemService.createOrderItem(request, order))
+                .toList();
+    }
+
+
     // validate order which not in pending status
     private void validateOrderCanBeCancelled(Order order) {
         if (order.getStatus() == OrderStatusEnum.CANCELLED) {
@@ -134,4 +172,6 @@ public class OrderService {
             throw new ValidationException("Order already completed");
         }
     }
+
+
 }

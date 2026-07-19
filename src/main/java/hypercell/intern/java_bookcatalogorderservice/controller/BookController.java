@@ -2,6 +2,7 @@ package hypercell.intern.java_bookcatalogorderservice.controller;
 
 import hypercell.intern.java_bookcatalogorderservice.dto.BookDto;
 import hypercell.intern.java_bookcatalogorderservice.service.BookService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +17,12 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<BookDto.Response> createBook(@RequestBody BookDto.Request bookRequest) {
+    public ResponseEntity<BookDto.Response> createBook(@Valid @RequestBody BookDto.Request bookRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookService.createBook(bookRequest));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<BookDto.Response> updateBook(@PathVariable Long id, @RequestBody BookDto.updateRequest bookRequest) {
+    public ResponseEntity<BookDto.Response> updateBook(@PathVariable Long id, @Valid @RequestBody BookDto.updateRequest bookRequest) {
         return ResponseEntity.ok(bookService.updateBook(id, bookRequest));
     }
 

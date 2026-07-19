@@ -2,6 +2,7 @@ package hypercell.intern.java_bookcatalogorderservice.controller;
 
 import hypercell.intern.java_bookcatalogorderservice.dto.UserDTO;
 import hypercell.intern.java_bookcatalogorderservice.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDTO.Response> createUser(@RequestBody UserDTO.Request userRequest) {
+    public ResponseEntity<UserDTO.Response> createUser(@Valid @RequestBody UserDTO.Request userRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUSer(userRequest));
     }
 

@@ -2,6 +2,7 @@ package hypercell.intern.java_bookcatalogorderservice.controller;
 
 import hypercell.intern.java_bookcatalogorderservice.dto.OrderDTO;
 import hypercell.intern.java_bookcatalogorderservice.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderDTO.Response> createOrder(@RequestBody OrderDTO.Request orderRequest) {
+    public ResponseEntity<OrderDTO.Response> createOrder(@Valid @RequestBody OrderDTO.Request orderRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(orderRequest));
     }
 
