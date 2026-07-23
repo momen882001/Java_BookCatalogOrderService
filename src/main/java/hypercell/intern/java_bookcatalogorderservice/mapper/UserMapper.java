@@ -12,7 +12,9 @@ public class UserMapper {
                 userEntity.getCreatedAt(),
                 userEntity.getBooks().stream()
                         .map(BookMapper::toResponse)
-                        .toList()
+                        .toList(),
+                userEntity.getUsername(),
+                userEntity.getRole()
         );
     }
 }

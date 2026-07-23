@@ -15,11 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    @PostMapping
-    public ResponseEntity<UserDTO.Response> createUser(@Valid @RequestBody UserDTO.Request userRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUSer(userRequest));
-    }
+    
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO.Response> getUserById(@PathVariable Long id) {

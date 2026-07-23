@@ -37,7 +37,9 @@ public class BookMapper {
                         bookEntity.getCreatedBy().getFirstname(),
                         bookEntity.getCreatedBy().getLastname(),
                         bookEntity.getCreatedBy().getCreatedAt(),
-                        null
+                        null,
+                        bookEntity.getCreatedBy().getUsername(),
+                        bookEntity.getCreatedBy().getRole()
                 )
         );
     }

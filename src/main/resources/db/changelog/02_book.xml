@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-    <changeSet id="01_book_1" author="Mo'men Mohamed">
+    <changeSet id="02_book_1" author="Mo'men Mohamed">
         <createTable tableName="books">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -35,7 +35,7 @@
 
     </changeSet>
 
-    <changeSet id="01_book_2" author="Mo'men Mohamed">
+    <changeSet id="02_book_2" author="Mo'men Mohamed">
 
         <addColumn tableName="books">
             <column name="created_by" type="BIGINT"/>

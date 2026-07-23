@@ -22,4 +22,24 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="01_user_2" author="Mo'men Mohamed">
+
+        <addColumn tableName="users">
+
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="password" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="role" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+
+        </addColumn>
+
+    </changeSet>
+
 </databaseChangeLog>

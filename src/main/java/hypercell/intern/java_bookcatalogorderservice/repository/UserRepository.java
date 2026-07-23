@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     List<User> findAllWithBooks();
 
+    Optional<User> findByUsername(String username);
+
 }

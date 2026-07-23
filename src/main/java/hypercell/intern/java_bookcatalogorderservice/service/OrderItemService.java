@@ -31,6 +31,8 @@ public class OrderItemService {
         return OrderItemMapper.toResponse(orderItem);
     }
 
+    // ------------------------------- Private Methods ---------------------------------------------------
+    
     private Book getBook(Long bookId) {
         return bookRepository.findById(bookId)
                 .orElseThrow(() ->

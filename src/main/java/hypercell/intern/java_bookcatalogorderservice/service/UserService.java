@@ -7,6 +7,7 @@ import hypercell.intern.java_bookcatalogorderservice.model.User;
 import hypercell.intern.java_bookcatalogorderservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -18,12 +19,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserDTO.Response createUSer(UserDTO.Request request) {
+    public UserDTO.Response createUser(UserDTO.Request request) {
 
         User user = User.builder()
                 .firstname(request.firstname())
                 .lastname(request.lastname())
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .role(request.role())
                 .createdAt(ZonedDateTime.now(ZoneId.of("Z")))
                 .build();
         userRepository.save(user);
@@ -31,7 +36,9 @@ public class UserService {
                 user.getFirstname(),
                 user.getLastname(),
                 user.getCreatedAt(),
-                null
+                null,
+                user.getUsername(),
+                user.getRole()
         );
     }
 
@@ -56,7 +63,9 @@ public class UserService {
                 u.getFirstname(),
                 u.getLastname(),
                 u.getCreatedAt(),
-                books
+                books,
+                u.getUsername(),
+                u.getRole()
         )).orElse(null);
     }
 
@@ -81,7 +90,7 @@ public class UserService {
                                 b.getCreatedAt(),
                                 b.getUpdatedAt(),
                                 null
-                        )).toList()))
+                        )).toList(), e.getUsername(), e.getRole()))
                 .toList();
     }
 
